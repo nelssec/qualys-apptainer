@@ -1,0 +1,14 @@
+# Extracted binary (run ./build.sh to extract)
+qscanner
+
+# Build artifacts
+*.sif
+qscanner-sif.gz
+
+# Reports
+reports/
+logs/
+
+# Editor/OS
+.DS_Store
+*.swp

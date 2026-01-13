@@ -1,0 +1,115 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author Qualys
+    Version 4.8.0
+    Description Qualys QScanner for Apptainer/Singularity (HPC-compatible)
+
+%files
+    qscanner-sif.gz /opt/qualys/qscanner.gz
+    # Note: build.sh creates qscanner-sif.gz from the appropriate architecture binary
+
+%post
+    apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        jq \
+        && rm -rf /var/lib/apt/lists/*
+
+    cd /opt/qualys
+    gunzip qscanner.gz
+    chmod +x qscanner
+
+    mkdir -p /workspace /reports
+
+%environment
+    export PATH="/opt/qualys:$PATH"
+    export QSCANNER_OUTPUT_DIR="/reports"
+
+%runscript
+    exec /opt/qualys/qscanner "$@"
+
+%test
+    /opt/qualys/qscanner --version
+
+%help
+    Qualys QScanner for Apptainer/Singularity (HPC-compatible)
+    Version: 4.8.0
+
+    This container provides Qualys vulnerability scanning for:
+    - Container images (from registries or tar archives)
+    - Source code repositories
+    - Root filesystems (SIF contents, running containers)
+
+    ==========================================================================
+    COMMANDS
+    ==========================================================================
+
+    image <target>        Scan container image from registry
+    tar <archive>         Scan container image from tar archive
+    repo <path>           Scan source code repository
+    rootfs <path>         Scan root filesystem (for SIF/running containers)
+
+    ==========================================================================
+    REQUIRED ENVIRONMENT
+    ==========================================================================
+
+    QUALYS_ACCESS_TOKEN   Your Qualys API access token
+    QUALYS_POD            Qualys platform: US1, US2, US3, US4, EU1, EU2, EU3,
+                          IN1, CA1, AE1, UK1, AU1, KSA1
+
+    ==========================================================================
+    SCAN TYPES (--scan-types)
+    ==========================================================================
+
+    pkg          Package vulnerabilities (default)
+    fileinsight  Non-package file information (default)
+    secret       Detect secrets/credentials
+    os           OS-level vulnerabilities (requires uname)
+
+    ==========================================================================
+    EXAMPLES
+    ==========================================================================
+
+    # Scan a registry image
+    apptainer run --env QUALYS_ACCESS_TOKEN=$TOKEN \
+        qscanner.sif --pod US2 image docker.io/nginx:latest
+
+    # Scan a tar archive
+    apptainer run --env QUALYS_ACCESS_TOKEN=$TOKEN \
+        -B ./myapp.tar:/data/myapp.tar \
+        qscanner.sif --pod US2 tar /data/myapp.tar
+
+    # Scan source code
+    apptainer run --env QUALYS_ACCESS_TOKEN=$TOKEN \
+        -B ./mycode:/workspace \
+        -B ./reports:/reports \
+        qscanner.sif --pod US2 --scan-types sca repo /workspace
+
+    # Scan extracted SIF filesystem (rootfs)
+    apptainer run --env QUALYS_ACCESS_TOKEN=$TOKEN \
+        -B /tmp/extracted-sif:/rootfs \
+        -B ./reports:/reports \
+        qscanner.sif --pod US2 \
+        --shell-commands "uname -a=Linux x86_64" \
+        rootfs /rootfs
+
+    ==========================================================================
+    FOR HPC/SLURM USAGE
+    ==========================================================================
+
+    For scanning on HPC clusters, we recommend using the direct binary
+    with the provided wrapper scripts instead of the SIF container:
+
+    ./scan-sif.sh <image.sif>         Scan SIF files directly
+    ./scan-running.sh <pid|name>      Scan running Apptainer containers
+    ./slurm-scan.sh                   Single Slurm job scan
+    ./slurm-batch.sh                  Array job for multiple images
+
+    ==========================================================================
+    MORE INFORMATION
+    ==========================================================================
+
+    Full documentation: qscanner --help
+    Command help:       qscanner <command> --help

@@ -1,0 +1,16 @@
+# Example targets file for slurm-batch.sh
+# One target per line. Supports:
+#   - SIF files (auto-detected): /path/to/image.sif
+#   - Registry images: docker.io/nginx:latest
+#   - Force type prefix: sif:/path/to/file, image:nginx:latest, repo:/path/to/code
+
+# SIF files (will use rootfs scanning)
+# /shared/containers/ubuntu.sif
+# /shared/containers/python-ml.sif
+
+# Registry images (will use image scanning)
+docker.io/library/nginx:latest
+docker.io/library/alpine:3.18
+docker.io/library/python:3.11-slim
+docker.io/library/node:20-alpine
+docker.io/library/redis:7-alpine
