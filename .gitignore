@@ -5,6 +5,11 @@ qscanner
 *.sif
 qscanner-sif.gz
 
+# Go build artifacts
+qscan/qscan
+qscan/qscan-*
+qscan/internal/embedded/qscanner-linux-amd64.gz
+
 # Reports
 reports/
 logs/
