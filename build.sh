@@ -21,7 +21,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
 # Configuration
-QSCANNER_VERSION="4.8.0"
+QSCANNER_VERSION="4.8.0-2"
 
 # Colors
 RED='\033[0;31m'

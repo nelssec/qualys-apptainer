@@ -3,7 +3,7 @@ From: ubuntu:22.04
 
 %labels
     Author Qualys
-    Version 4.8.0
+    Version 4.8.0-2
     Description Qualys QScanner for Apptainer/Singularity (HPC-compatible)
 
 %files
@@ -35,7 +35,7 @@ From: ubuntu:22.04
 
 %help
     Qualys QScanner for Apptainer/Singularity (HPC-compatible)
-    Version: 4.8.0
+    Version: 4.8.0-2
 
     This container provides Qualys vulnerability scanning for:
     - Container images (from registries or tar archives)
